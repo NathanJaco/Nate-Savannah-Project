@@ -1,0 +1,9 @@
+[
+  {
+    "product_id": "1",
+    "name": "Notebook",
+    "category": "School Supplies",
+    "price": 4.99,
+    "stock": 12
+  }
+]
