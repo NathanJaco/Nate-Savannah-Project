@@ -114,14 +114,29 @@ elif st.session_state["page"] == "register":
         new_password = st.text_input("Password", type="password", key="password_register")
         new_role = st.selectbox("Role", ["Owner", "Employee"], key="role_register")
 
-        st.info("Day 1 placeholder: registration save logic will be added next.")
-
         if st.button("Create Account", key="create_account_btn", type="primary", use_container_width=True):
             with st.spinner("Creating account..."):
                 time.sleep(2)
-                st.success("Placeholder account created!")
-                st.session_state["page"] = "login"
-                st.rerun()
+
+                if not full_name or not new_email or not new_password:
+                    st.warning("Please complete all fields")
+                else:
+                    users.append(
+                        {
+                            "name": full_name,
+                            "email": new_email,
+                            "password": new_password,
+                            "role": new_role
+                        }
+                    )
+
+                    with open(json_path_users, "w") as f:
+                        json.dump(users, f)
+
+                    st.success("Account created!")
+                    time.sleep(2)
+                    st.session_state["page"] = "login"
+                    st.rerun()
 
 
 elif st.session_state["page"] == "owner_dashboard":
