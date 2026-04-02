@@ -5,12 +5,15 @@
     "name": "Nathan",
     "email": "owner@test.com",
     "password": "123",
-    "role": "Owner",
+    "role": "Owner"
     
+   
+  }
+  ,
+  { 
     "user_id": "2",
     "name": "Savannah",
     "email": "employee@test.com",
     "password": "123",
-    "role": "Employee"
-  }
+    "role": "Employee"}
 ]

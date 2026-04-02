@@ -17,17 +17,11 @@ if "page" not in st.session_state:
     st.session_state["page"] = "login"
 
 users = []
-
-
-
-
 json_path_users = Path("users.json")
 
 if json_path_users.exists():
     with open(json_path_users, "r") as f:
         users = json.load(f)
-
-
 
 products = []
 
@@ -89,36 +83,42 @@ if st.session_state["page"] == "login":
         email_input = st.text_input("Email", key="email_login")
         password_input = st.text_input("Password", type="password", key="password_login")
 
-        st.info("Day 1 placeholder: real login logic will be added next.")
-
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("Log In as Owner", key="fake_owner_login_btn", type="primary", use_container_width=True):
+            if st.button("Log In", key="real_login_btn", type="primary", use_container_width=True):
                 with st.spinner("Logging in..."):
                     time.sleep(2)
-                    st.session_state["logged_in"] = True
-                    st.session_state["user"] = {
-                        "email": email_input,
-                        "role": "Owner"
-                    }
-                    st.session_state["role"] = "Owner"
-                    st.session_state["page"] = "owner_dashboard"
-                    st.rerun()
+
+                    user_found = None
+                    role = None
+                    for user in users:
+                        if user["email"] == email_input and user["password"] == password_input:
+                            user_found = user
+                            role = user["role"]
+                            break
+                
+
+                    if user_found:
+                        st.session_state["logged_in"] = True
+                        st.session_state["user"] = user_found
+                        st.session_state["role"] = role
+
+                        if role == "Owner":
+                            st.session_state["page"] = "owner_dashboard"
+                        else:
+                            st.session_state["page"] = "employee_dashboard"
+
+                        st.success("Login successful!")
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error("Invalid email or password")
 
         with col2:
-            if st.button("Log In as Employee", key="fake_employee_login_btn", type="primary", use_container_width=True):
-                with st.spinner("Logging in..."):
-                    time.sleep(2)
-                    st.session_state["logged_in"] = True
-                    st.session_state["user"] = {
-                        "email": email_input,
-                        "role": "Employee"
-                    }
-                    st.session_state["role"] = "Employee"
-                    st.session_state["page"] = "employee_dashboard"
-                    st.rerun()
-
+            if st.button("Go to Register", key="go_register_btn", use_container_width=True):
+                st.session_state["page"] = "register"
+                st.rerun()
 
 elif st.session_state["page"] == "register":
     st.subheader("Register")
@@ -152,6 +152,8 @@ elif st.session_state["page"] == "register":
                     time.sleep(2)
                     st.session_state["page"] = "login"
                     st.rerun()
+
+
 
 
 elif st.session_state["page"] == "owner_dashboard":
