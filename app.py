@@ -1,6 +1,7 @@
 import streamlit as st
+import json
+from pathlib import Path
 import time
-
 st.set_page_config("Inventory Manager", layout="wide", initial_sidebar_state="expanded")
 
 if "logged_in" not in st.session_state:
@@ -15,6 +16,13 @@ if "role" not in st.session_state:
 if "page" not in st.session_state:
     st.session_state["page"] = "login"
 
+users = []
+
+json_path_users = Path("users.json")
+
+if json_path_users.exists():
+    with open(json_path_users, "r") as f:
+        users = json.load(f)
 
 with st.sidebar:
     st.markdown("### Inventory Manager")
