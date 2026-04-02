@@ -242,7 +242,27 @@ elif st.session_state["page"] == "add_product":
             stock = st.number_input("Stock", key="stock_input")
 
             if st.button("Save Product", key="save_product_btn", type="primary", use_container_width=True):
-                st.success("Day 1 placeholder only.")
+                with st.spinner("Saving product..."):
+                    time.sleep(2)
+
+                    if not product_name or not category:
+                        st.warning("Please complete all fields")
+                    else:
+                        products.append(
+                            {
+                                "name": product_name,
+                                "category": category,
+                                "price": price,
+                                "stock": stock
+                            }
+                        )
+
+                        with open(json_path_products, "w") as f:
+                            json.dump(products, f)
+
+                        st.success("Product saved successfully!")
+                        time.sleep(2)
+                        st.rerun()
 
 
 elif st.session_state["page"] == "manage_products":
