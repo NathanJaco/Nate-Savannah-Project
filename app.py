@@ -18,12 +18,27 @@ if "page" not in st.session_state:
 
 users = []
 
+
+
+
 json_path_users = Path("users.json")
 
 if json_path_users.exists():
     with open(json_path_users, "r") as f:
         users = json.load(f)
 
+
+
+products = []
+
+json_path_products = Path("products.json")
+
+if json_path_products.exists():
+    with open(json_path_products, "r") as f:
+        products = json.load(f)
+
+
+        
 with st.sidebar:
     st.markdown("### Inventory Manager")
 
@@ -175,10 +190,31 @@ elif st.session_state["page"] == "employee_dashboard":
 
     with col1:
         with st.container(border=True):
-            st.markdown("### Employee Actions")
-            st.markdown("- View products")
-            st.markdown("- Search products")
-            st.markdown("- View low stock items")
+            st.markdown("### Inventory")
+
+            search_product = st.text_input("Search Product", key="search_product_txt")
+
+            filtered_products = []
+
+            for product in products:
+                if search_product.lower() in product["name"].lower():
+                    filtered_products.append(product)
+
+            st.dataframe(filtered_products, use_container_width=True)
+
+        with st.container(border=True):
+            st.markdown("### Low Stock Items")
+
+            low_stock_products = []
+
+            for product in products:
+                if product["stock"] < 5:
+                    low_stock_products.append(product)
+
+            if len(low_stock_products) > 0:
+                st.dataframe(low_stock_products, use_container_width=True)
+            else:
+                st.info("No low stock items found.")
 
     with col2:
         with st.container(border=True):

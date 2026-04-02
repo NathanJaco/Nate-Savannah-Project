@@ -1,9 +1,14 @@
 [
-  {
-    "user_id": "1",
-    "name": "Nathan",
-    "email": "owner@test.com",
-    "password": "123",
-    "role": "Owner"
-  }
+    {
+        "name": "Notebook",
+        "category": "School Supplies",
+        "price": 4.99,
+        "stock": 3
+    },
+    {
+        "name": "Pens",
+        "category": "Office",
+        "price": 2.99,
+        "stock": 12
+    }
 ]
