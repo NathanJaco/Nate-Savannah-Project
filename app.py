@@ -271,4 +271,23 @@ elif st.session_state["page"] == "manage_products":
 
     with st.container(border=True):
         st.markdown("### Product Management")
-        st.info("Day 1 placeholder: update and delete logic will be added later.")
+
+        for product in products:
+            col1, col2 = st.columns([4,1])
+            with col1:
+                st.markdown(f"{product['name']} | ${product['price']} | Stock: {product['stock']}")
+
+            with col2:
+                if st.button("Delete", key=product["name"]):
+                    new_list = []
+
+                    for item in products:
+                        if item["name"] != product["name"]:
+                            new_list.append(item)
+
+                    with open(json_path_products, "w") as f:
+                        json.dump(new_list, f)
+
+                    st.success("Deleted!")
+                    time.sleep(1)
+                    st.rerun()
