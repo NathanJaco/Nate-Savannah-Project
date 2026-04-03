@@ -257,8 +257,8 @@ elif st.session_state["page"] == "add_product":
 
             product_name = st.text_input("Product Name", key="product_name_input")
             category = st.text_input("Category", key="category_input")
-            price = st.number_input("Price", key="price_input")
-            stock = st.number_input("Stock", key="stock_input")
+            price = st.number_input("Price", min_value=0.0, step=0.5, key="price_input")
+            stock = st.number_input("Stock", min_value=0, step=1, key="stock_input")
 
             if st.button("Save Product", key="save_product_btn", type="primary", use_container_width=True):
                 with st.spinner("Saving product..."):
@@ -307,17 +307,19 @@ elif st.session_state["page"] == "manage_products":
                 st.markdown(f"{product['name']} | ${product['price']} | Stock: {product['stock']}")
 
             with col2:
-                if st.button("Delete", key=product["name"]):
+                if st.button("Delete", key=product["name"] + str(product["price"])):
                     new_list = []
 
                     for item in products:
                         if item["name"] != product["name"]:
                             new_list.append(item)
 
-                    with open(json_path_products, "w") as f:
-                        json.dump(new_list, f)
+                    products = new_list
 
-                    st.success("Deleted!")
+                    with open(json_path_products, "w") as f:
+                        json.dump(products, f)
+
+                    st.success("Product deleted successfully!")
                     time.sleep(1)
                     st.rerun()
 
