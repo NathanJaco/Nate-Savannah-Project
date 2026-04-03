@@ -58,10 +58,16 @@ with st.sidebar:
             if st.button("Manage Products", key="manage_products_btn", type="primary", use_container_width=True):
                 st.session_state["page"] = "manage_products"
                 st.rerun()
+            if st.button("Chatbot", key="chatbot_btn", use_container_width=True):
+                st.session_state["page"] = "chatbot"
+                st.rerun()
 
         elif st.session_state["role"] == "Employee":
             if st.button("Employee Dashboard", key="employee_dashboard_btn", type="primary", use_container_width=True):
                 st.session_state["page"] = "employee_dashboard"
+                st.rerun()
+            if st.button("Chatbot", key="chatbot_emp_btn", use_container_width=True):
+                st.session_state["page"] = "chatbot"
                 st.rerun()
 
         if st.button("Log Out", key="logout_btn", use_container_width=True):
@@ -291,3 +297,71 @@ elif st.session_state["page"] == "manage_products":
                     st.success("Deleted!")
                     time.sleep(1)
                     st.rerun()
+
+
+                    
+elif st.session_state["page"] == "chatbot":
+    st.header("Chatbot")
+    st.caption("Ask questions about your inventory")
+    st.divider()
+
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = [
+            {"role": "assistant", "content": "Hi! How can I help you?"}
+        ]
+
+    for message in st.session_state["messages"]:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
+
+    user_input = st.chat_input("Ask a question...")
+
+    if user_input:
+        st.session_state["messages"].append({
+            "role": "user",
+            "content": user_input
+        })
+
+        ai_response = ""
+
+
+        if "low stock" in user_input.lower():
+            low_stock = []
+
+            for product in products:
+                if product["stock"] < 5:
+                    low_stock.append(product["name"])
+
+            if len(low_stock) > 0:
+                ai_response = "Low stock items: " + ", ".join(low_stock)
+            else:
+                ai_response = "All items have sufficient stock."
+
+        elif "total products" in user_input.lower():
+            ai_response = f"There are {len(products)} products in the inventory."
+
+        elif "categories" in user_input.lower():
+            categories = []
+
+            for product in products:
+                if product["category"] not in categories:
+                    categories.append(product["category"])
+
+            ai_response = "Categories: " + ", ".join(categories)
+
+        elif "help" in user_input.lower():
+            ai_response = "You can ask about low stock, total products, categories, or how to add a product."
+
+        elif "add product" in user_input.lower():
+            ai_response = "Go to the Add Product page and fill out the form to add a new item."
+
+        else:
+            ai_response = "I could not find an answer for it, try again!"
+
+        st.session_state["messages"].append({
+            "role": "assistant",
+            "content": ai_response
+        })
+
+        time.sleep(2)
+        st.rerun()
