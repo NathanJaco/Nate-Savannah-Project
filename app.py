@@ -58,6 +58,9 @@ with st.sidebar:
             if st.button("Manage Products", key="manage_products_btn", type="primary", use_container_width=True):
                 st.session_state["page"] = "manage_products"
                 st.rerun()
+            if st.button("Update Product", key="update_product_btn", use_container_width=True):
+                st.session_state["page"] = "update_product"
+                st.rerun()
             if st.button("Chatbot", key="chatbot_btn", use_container_width=True):
                 st.session_state["page"] = "chatbot"
                 st.rerun()
@@ -365,3 +368,40 @@ elif st.session_state["page"] == "chatbot":
 
         time.sleep(2)
         st.rerun()
+
+
+elif st.session_state["page"] == "update_product":
+    st.header("Update Product")
+    st.divider()
+
+    with st.container(border=True):
+        st.markdown("### Update Product Details")
+
+        if len(products) == 0:
+            st.info("No products available to update.")
+        else:
+            product_names = []
+
+            for product in products:
+                product_names.append(product["name"])
+
+            selected_product = st.selectbox("Select Product", product_names)
+
+            new_price = st.number_input("New Price", min_value=0.0)
+            new_stock = st.number_input("New Stock", min_value=0)
+
+            if st.button("Update", type="primary", use_container_width=True):
+                with st.spinner("Updating product..."):
+                    time.sleep(2)
+
+                    for product in products:
+                        if product["name"] == selected_product:
+                            product["price"] = new_price
+                            product["stock"] = new_stock
+
+                    with open(json_path_products, "w") as f:
+                        json.dump(products, f)
+
+                    st.success("Product updated!")
+                    time.sleep(1)
+                    st.rerun()
