@@ -142,8 +142,18 @@ elif st.session_state["page"] == "register":
             with st.spinner("Creating account..."):
                 time.sleep(2)
 
+                email_exists = False
+
+                for user in users:
+                    if user["email"] == new_email:
+                        email_exists = True
+
                 if not full_name or not new_email or not new_password:
                     st.warning("Please complete all fields")
+
+                elif email_exists:
+                    st.error("An account with that email already exists")
+
                 else:
                     users.append(
                         {
@@ -254,8 +264,18 @@ elif st.session_state["page"] == "add_product":
                 with st.spinner("Saving product..."):
                     time.sleep(2)
 
+                    product_exists = False
+
+                    for product in products:
+                        if product["name"].lower() == product_name.lower():
+                            product_exists = True
+
                     if not product_name or not category:
                         st.warning("Please complete all fields")
+
+                    elif product_exists:
+                        st.error("A product with that name already exists")
+
                     else:
                         products.append(
                             {
