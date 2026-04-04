@@ -118,7 +118,7 @@ if st.session_state["page"] == "login":
                         else:
                             st.session_state["page"] = "employee_dashboard"
 
-                        st.success("Login successful!")
+                        st.success(f"Welcome, {user_found['name']}!")
                         time.sleep(1)
                         st.rerun()
                     else:
@@ -133,7 +133,7 @@ elif st.session_state["page"] == "register":
     st.subheader("Register")
 
     with st.container(border=True):
-        full_name = st.text_input("Full Name", key="full_name_register")
+        full_name = st.text_input("Name", key="full_name_register")
         new_email = st.text_input("Email", key="email_register")
         new_password = st.text_input("Password", type="password", key="password_register")
         new_role = st.selectbox("Role", ["Owner", "Employee"], key="role_register")
@@ -238,16 +238,20 @@ elif st.session_state["page"] == "employee_dashboard":
     with col1:
         with st.container(border=True):
             st.markdown("### Inventory")
-
             search_product = st.text_input("Search Product", key="search_product_txt")
-
             filtered_products = []
-
-            for product in products:
-                if search_product.lower() in product["name"].lower():
+            if search_product == "":
+                for product in products:
                     filtered_products.append(product)
+            else:
+                for product in products:
+                    if search_product.lower() in product["name"].lower():
+                        filtered_products.append(product)
 
-            st.dataframe(filtered_products, use_container_width=True)
+            if len(filtered_products) > 0:
+                st.dataframe(filtered_products, use_container_width=True)
+            else:
+                st.info("No matching products found.")
 
         with st.container(border=True):
             st.markdown("### Low Stock Items")
@@ -327,36 +331,40 @@ elif st.session_state["page"] == "manage_products":
     with st.container(border=True):
         st.markdown("### Product Management")
 
-        for product in products:
-            col1, col2 = st.columns([4,1])
-            with col1:
-                st.markdown(f"**{product['name']}**")
-                st.caption(f"Category: {product['category']}")
-                st.markdown(f"Price: ${product['price']}")
-                st.markdown(f"Stock: {product['stock']}")
+        if len(products) == 0:
+            st.info("No products available.")
+        else:
+            for product in products:
+                col1, col2 = st.columns([4,1])
+                with col1:
+                    st.markdown(f"**{product['name']}**")
+                    st.caption(f"Category: {product['category']}")
+                    st.markdown(f"Price: ${product['price']}")
+                    st.markdown(f"Stock: {product['stock']}")
+                    st.divider()
 
-            with col2:
-                if st.button("Delete", key=product["name"] + str(product["price"])):
-                    new_list = []
+                with col2:
+                    if st.button("Delete", key=product["name"] + str(product["price"])):
+                        new_list = []
 
-                    for item in products:
-                        if item["name"] != product["name"]:
-                            new_list.append(item)
+                        for item in products:
+                            if item["name"] != product["name"]:
+                                new_list.append(item)
 
-                    products = new_list
+                        products = new_list
 
-                    with open(json_path_products, "w") as f:
-                        json.dump(products, f)
+                        with open(json_path_products, "w") as f:
+                            json.dump(products, f)
 
-                    st.success("Product deleted successfully!")
-                    time.sleep(1)
-                    st.rerun()
+                        st.success("Product deleted successfully!")
+                        time.sleep(1)
+                        st.rerun()
 
 
                     
 elif st.session_state["page"] == "chatbot":
     st.header("Chatbot")
-    st.caption("Ask questions about your inventory")
+    st.caption("Ask questions about inventory, stock, categories, or product management.")
     st.divider()
 
     if "messages" not in st.session_state:
@@ -453,6 +461,6 @@ elif st.session_state["page"] == "update_product":
                     with open(json_path_products, "w") as f:
                         json.dump(products, f)
 
-                    st.success("Product updated!")
+                    st.success(f"{selected_product} updated successfully!")
                     time.sleep(1)
                     st.rerun()
